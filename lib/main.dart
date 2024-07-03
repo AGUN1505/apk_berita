@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aplikasi_berita/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Berita ',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Berita'),
-        ),
-        body: Center(
-          child: Text('isi halaman'),
-        ),
-      ),
+      home: HomePage(),
     );
   }
 }
