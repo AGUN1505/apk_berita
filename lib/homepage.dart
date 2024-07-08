@@ -24,7 +24,14 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: Icon(Icons.list),
           title: Center(child: const Text('Berita')),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Icon(Icons.login),
+            )
+          ],
         ),
         body: FutureBuilder(
             future: fetcNews(),
@@ -33,7 +40,46 @@ class HomePage extends StatelessWidget {
                 return ListView.builder(
                   itemCount: snapshot.data['data'].length,
                   itemBuilder: (context, index) {
-                    return Text(snapshot.data['data'][index]['judul']);
+                    // return Text(snapshot.data['data'][index]['judul']);
+                    return Container(
+                      height: 180,
+                      child: Card(
+                          elevation: 5,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                padding: EdgeInsets.all(10),
+                                child: Image.network(url2 +
+                                    '/img/' +
+                                    snapshot.data['data'][index]['gambar']),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                          snapshot.data['data'][index]['judul'],
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        snapshot.data['data'][index]['isi'],
+                                        maxLines: 5,
+                                        style: TextStyle(fontSize: 10.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
+                            ],
+                          )),
+                    );
                   },
                 );
               } else {
