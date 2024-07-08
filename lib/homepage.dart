@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as link;
+import 'package:aplikasi_berita/newsdetail.dart';
 
 const url = "http://localhost:8080/api/";
 const url2 = "http://localhost:8080/";
@@ -60,11 +61,24 @@ class HomePage extends StatelessWidget {
                                   children: [
                                     Align(
                                       alignment: Alignment.topLeft,
-                                      child: Text(
-                                          snapshot.data['data'][index]['judul'],
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold)),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => NewsDetail(
+                                                  news: snapshot.data['data']
+                                                      [index]),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                            snapshot.data['data'][index]
+                                                ['judul'],
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
                                     ),
                                     Align(
                                       alignment: Alignment.topLeft,
