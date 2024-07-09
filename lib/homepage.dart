@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as link;
+import 'package:http/http.dart' as http;
 import 'package:aplikasi_berita/newsdetail.dart';
+import 'package:aplikasi_berita/login.dart';
 
 const url = "http://localhost:8080/api/";
 const url2 = "http://localhost:8080/";
 
 Future fetcNews() async {
-  final response = await link.get(Uri.parse(url));
+  final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
     print(jsonDecode(response.body));
     return jsonDecode(response.body);
@@ -28,9 +29,15 @@ class HomePage extends StatelessWidget {
           leading: Icon(Icons.list),
           title: Center(child: const Text('Berita')),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Icon(Icons.login),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: ((context) => Login())));
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: Icon(Icons.login),
+              ),
             )
           ],
         ),
