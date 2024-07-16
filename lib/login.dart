@@ -40,6 +40,7 @@ class Login extends StatelessWidget {
                   filled: true,
                 ),
               ),
+              SizedBox(height: 10.0),
               TextFormField(
                 //cek data field jika kosong
                 validator: (value) {
