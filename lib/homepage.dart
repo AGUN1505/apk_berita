@@ -104,7 +104,7 @@ class HomePage extends StatelessWidget {
                   },
                 );
               } else {
-                return const Text('data eror');
+                return Center(child: CircularProgressIndicator());
               }
             }));
   }
