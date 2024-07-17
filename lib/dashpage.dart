@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:aplikasi_berita/homepage.dart';
 import 'package:aplikasi_berita/newsdetail.dart';
 import 'package:aplikasi_berita/createpage.dart';
+import 'package:aplikasi_berita/editpage.dart';
+import 'package:http/http.dart' as http;
 
 class DashPage extends StatefulWidget {
   final String nama;
@@ -13,18 +17,42 @@ class DashPage extends StatefulWidget {
 }
 
 class _DashPageState extends State<DashPage> {
+  Future _onDelete(String id) async {
+    try {
+      return await http.delete(Uri.parse(url + "/" + id), body: {
+        "id": id,
+      }).then((value) {
+        var data = jsonDecode(value.body);
+        print(data["messege"]);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  DashPage(nama: widget.nama, password: widget.password),
+            ));
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CreatePage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CreatePage(
+                            nama: widget.nama,
+                            password: widget.password,
+                          )));
             }),
         appBar: AppBar(
           leading: Icon(Icons.list),
-          title: Center(child: Text('Dashboard')),
+          title: Center(child: Text('Dashboard , hi ${widget.nama}')),
           actions: [
             GestureDetector(
               // onTap: () {
@@ -33,7 +61,12 @@ class _DashPageState extends State<DashPage> {
               // },
               child: Padding(
                 padding: const EdgeInsets.only(right: 15.0),
-                child: Icon(Icons.logout),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
+                    child: Icon(Icons.logout)),
               ),
             )
           ],
@@ -92,8 +125,53 @@ class _DashPageState extends State<DashPage> {
                                       ),
                                     ),
                                     Row(children: [
-                                      Icon(Icons.edit),
-                                      Icon(Icons.delete),
+                                      GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditPage(
+                                                          nama: widget.nama,
+                                                          password:
+                                                              widget.password,
+                                                          id: snapshot
+                                                                  .data['data']
+                                                              [index]['id'])),
+                                            );
+                                          },
+                                          child: Icon(Icons.edit)),
+                                      IconButton(
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    content: Text(
+                                                        "apakah ingin menghapus?"),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                          child: Icon(
+                                                              Icons.cancel)),
+                                                      ElevatedButton(
+                                                          onPressed: () =>
+                                                              _onDelete(snapshot
+                                                                          .data[
+                                                                      'data'][
+                                                                  index]['id']),
+                                                          child: Icon(Icons
+                                                              .check_circle))
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                          icon: Icon(Icons.delete)),
+                                      // Icon(Icons.delete),
                                     ])
                                   ],
                                 ),

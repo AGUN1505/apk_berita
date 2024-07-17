@@ -1,41 +1,89 @@
 import 'dart:convert';
 
-import 'package:aplikasi_berita/dashpage.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_berita/homepage.dart';
+import 'package:aplikasi_berita/dashpage.dart';
 import 'package:http/http.dart' as http;
 
-class CreatePage extends StatefulWidget {
+class EditPage extends StatefulWidget {
   final String nama;
   final String password;
-  const CreatePage({super.key, required this.nama, required this.password});
+  final String id;
+  const EditPage(
+      {super.key,
+      required this.nama,
+      required this.password,
+      required this.id});
 
   @override
-  State<CreatePage> createState() => _CreatePageState();
+  State<EditPage> createState() => _EditPageState();
 }
 
-class _CreatePageState extends State<CreatePage> {
-  final judulController = TextEditingController();
-  final isiController = TextEditingController();
-  final gambarController = TextEditingController();
-
+class _EditPageState extends State<EditPage> {
   final _formkey = GlobalKey<FormState>();
 
-  Future _OnSubmit() async {
+  //inisialisasi field
+  var judulController = TextEditingController();
+  var isiController = TextEditingController();
+  var gambarController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
+
+  Future _getData() async {
     try {
-      return await http.post(Uri.parse(url), body: {
+      final response = await http.get(Uri.parse(url + "/${widget.id}"));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          judulController = TextEditingController(text: data['judul']);
+          isiController = TextEditingController(text: data['isi']);
+          gambarController = TextEditingController(text: data['gambar']);
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future _OnUpdate() async {
+    try {
+      return await http.put(Uri.parse(url + "/${widget.id}"), body: {
+        "id": widget.id,
         "judul": judulController.text,
         "isi": isiController.text,
         "gambar": gambarController.text
       }).then((value) {
         var data = jsonDecode(value.body);
         print(data["messege"]);
-
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    DashPage(nama: widget.nama, password: widget.password)));
+              builder: (context) =>
+                  DashPage(nama: widget.nama, password: widget.password),
+            ));
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future _onDelete() async {
+    try {
+      return await http.delete(Uri.parse(url + "/${widget.id}"), body: {
+        "id": widget.id,
+      }).then((value) {
+        var data = jsonDecode(value.body);
+        print(data["messege"]);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  DashPage(nama: widget.nama, password: widget.password),
+            ));
       });
     } catch (e) {
       print(e);
@@ -46,7 +94,30 @@ class _CreatePageState extends State<CreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah berita'),
+        title: Text('ubah berita'),
+        actions: [
+          Container(
+            child: IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Text("apakah ingin menghapus?"),
+                          actions: <Widget>[
+                            ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Icon(Icons.cancel)),
+                            ElevatedButton(
+                                onPressed: () => _onDelete(),
+                                child: Icon(Icons.check_circle))
+                          ],
+                        );
+                      });
+                },
+                icon: Icon(Icons.delete)),
+          )
+        ],
       ),
       body: Form(
         key: _formkey,
@@ -161,7 +232,7 @@ class _CreatePageState extends State<CreatePage> {
                   onPressed: () {
                     //validasi
                     if (_formkey.currentState!.validate()) {
-                      _OnSubmit();
+                      _OnUpdate();
                     }
                   })
             ],
