@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aplikasi_berita/dashpage.dart';
 
-class Login extends StatelessWidget {
-  // const Login({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final myUsernameController = TextEditingController();
   final myPasswordController = TextEditingController();
   late String nUsername, nPassword;
